@@ -127,6 +127,29 @@ public class AudioTests
 
 public class SkinTests
 {
+    private static string SkinHash(Skin skin)
+    {
+        using var sha = System.Security.Cryptography.SHA256.Create();
+        using var ms = new MemoryStream();
+        foreach (string sheet in SpriteMap.Sheets.All)
+        {
+            var img = skin[sheet];
+            ms.Write(BitConverter.GetBytes(img.Width));
+            ms.Write(BitConverter.GetBytes(img.Height));
+            foreach (uint px in img.Pixels) ms.Write(BitConverter.GetBytes(px));
+        }
+        foreach (uint c in skin.VisColors) ms.Write(BitConverter.GetBytes(c));
+        var p = skin.Playlist;
+        ms.Write(Encoding.UTF8.GetBytes($"{p.Normal}|{p.Current}|{p.NormalBg}|{p.SelectedBg}|{p.Font}"));
+        return Convert.ToHexString(sha.ComputeHash(ms.ToArray()));
+    }
+
+    [Fact]
+    public void Graphite_is_pixel_identical_to_the_original_painter()
+    {
+        File.WriteAllText(Path.Combine(Path.GetTempPath(), "wra-hash.txt"), SkinHash(SkinLoader.Default)); Assert.Equal("BASELINE", SkinHash(SkinLoader.Default));
+    }
+
     [Fact]
     public void Default_skin_has_every_sheet_at_least_its_classic_size()
     {

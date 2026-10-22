@@ -345,7 +345,7 @@ public sealed class PlayerController : IDisposable
 
     private static Skin LoadSkinOrDefault(string? path)
     {
-        if (string.IsNullOrEmpty(path) || !(File.Exists(path) || Directory.Exists(path))) return SkinLoader.Default;
+        if (string.IsNullOrEmpty(path)) return SkinLoader.Default;
         try
         {
             return SkinLoader.Load(path);

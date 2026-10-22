@@ -144,6 +144,8 @@ public static class Menus
             new Separator(),
             Item("<Default: Graphite>", () => c.LoadSkin(null), null, c.Settings.SkinPath is null),
         };
+        foreach (var edition in Core.Skins.BuiltInSkins.All)
+            items.Add(Item(edition.Name, () => c.LoadSkin(edition.Path), null, c.Settings.SkinPath == edition.Path));
         if (Directory.Exists(SettingsStore.SkinsFolder))
         {
             foreach (string f in Directory.EnumerateFiles(SettingsStore.SkinsFolder)

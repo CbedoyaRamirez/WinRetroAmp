@@ -18,6 +18,7 @@ public static partial class SkinLoader
 
     public static Skin Load(string path)
     {
+        if (path.StartsWith("builtin:", StringComparison.Ordinal)) return BuiltInSkins.Create(path);
         var files = Directory.Exists(path) ? ReadFolder(path) : ReadArchive(path);
         return FromFiles(Path.GetFileNameWithoutExtension(path.TrimEnd('\\', '/')), files);
     }
@@ -139,8 +140,10 @@ public static partial class SkinLoader
 
     /// <summary>Writes the default skin as a .wsz so people can use it as a template for their own.</summary>
     public static void ExportDefault(string path)
+        => Export(Default, path);
+
+    public static void Export(Skin skin, string path)
     {
-        var skin = Default;
         using var fs = File.Create(path);
         using var zip = new ZipArchive(fs, ZipArchiveMode.Create);
         foreach (string sheet in SpriteMap.Sheets.All)
